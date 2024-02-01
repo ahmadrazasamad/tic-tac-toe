@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: "Bouncy";
+    src: url("fonts/Bouncy-PERSONAL_USE_ONLY.otf");
+}
