@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./images/icon-16x16.svg" type="image/svg+xml" sizes="16x16" />
+    <link rel="icon" href="./images/icon-32x32.svg" type="image/svg+xml" sizes="32x32" />
+    <link rel="stylesheet" href="../distribution/style.css" />
+    <title>Tic Tac Toe</title>
+</head>
+
+<body class="font-bouncy bg-[#e92c28] grid place-items-center place-content-center h-screen">
+
+    <h1 class="text-center text-[#FFE200] font-bold text-5xl tracking-wide">Tic Tac Toe</h1>
+
+    <div id="selector" class="mt-2">
+
+        <div id="sp-mp-driver" class="flex max-[480px]:flex-col"> <!-- hidden and flex classes to be added from JS -->
+            <button id="sp-btn"
+                class="py-[15px] px-[30px] tracking-wide font-semibold text-2xl text-white bg-[#06171F] border-none rounded-2xl text-center active:bg-white active:text-[#06171F] transition-colors m-1">Single
+                Player</button>
+            <button id="mp-btn"
+                class="py-[15px] px-[30px] tracking-wide font-semibold text-2xl text-white bg-[#06171F] border-none rounded-2xl text-center active:bg-white active:text-[#06171F] transition-colors m-1">Multiplayer</button>
+        </div>
+
+        <div id="xo-turn-shifter" class="hidden w-screen justify-center items-center">
+            <!-- hidden and flex classes to be added from JS -->
+            <div id="x-count"
+                class="w-[15%] max-[480px]:w-1/4 border-4 border-white rounded-2xl px-3 pt-1 flex justify-between items-center text-xl text-white font-extrabold m-1 cursor-pointer border-b-[10px] border-b-[#48A9A6] transition-all duration-300"
+                onclick="toggleChangePlayersTurn('x')">X<span id="x-win-count"
+                    class="font-['Comic_Sans_MS'] mb-2">-</span></div>
+            <div id="o-count"
+                class="w-[15%] max-[480px]:w-1/4 border-4 border-white rounded-2xl px-3 pt-1 flex justify-between items-center text-xl text-white font-extrabold m-1 cursor-pointer transition-all duration-300"
+                onclick="toggleChangePlayersTurn('o')">O<span id="o-win-count"
+                    class="font-['Comic_Sans_MS'] mb-2">-</span></div>
+        </div>
+
+        <div id="mp-game-setting" class="hidden flex-col justify-center items-center text-[#06171F]">
+
+            <div class="flex max-[450px]:flex-col">
+
+                <div class="border-8 border-white rounded p-5 m-2 grid place-items-center">
+                    <p class="text-2xl font-bold tracking-widest m-1">PLAYER I:</p>
+
+                    <div class="text-xl font-semibold flex justify-center">
+                        <span class="mr-1 flex items-center justify-between">
+                            <input type="radio" name="player1-choice" value="X" id="x1"
+                                class="player1-choice accent-[#06171F] w-4 h-4 mr-2"
+                                onchange="toggleMpPlayerChooser('player1-choice')" />
+                            <label for="x1" class="mt-1">X</label>
+                        </span>
+                        <span class="ml-1 flex items-center justify-between">
+                            <input type="radio" name="player1-choice" value="O" id="o1"
+                                class="player1-choice accent-[#06171F] w-4 h-4 mr-2"
+                                onchange="toggleMpPlayerChooser('player1-choice')" />
+                            <label for="o1" class="mt-1">O</label>
+                        </span>
+                    </div>
+
+                    <p id="error-msg-1" class="hidden text-base text-white tracking-widest mt-5 opacity-0 h-0 overflow-hidden transition-all">*Please Choose One</p>
+                </div>
+
+                <div class="border-8 border-white rounded p-5 m-2 grid place-items-center">
+                    <p class="text-2xl font-bold tracking-widest m-1">PLAYER II:</p>
+
+                    <div class="text-xl font-semibold flex justify-center">
+                        <span class="mr-1 flex items-center justify-between">
+                            <input type="radio" name="player2-choice" value="X" id="x2"
+                                class="player2-choice accent-[#06171F] w-4 h-4 mr-2"
+                                onchange="toggleMpPlayerChooser('player2-choice')" />
+                            <label for="x2" class="mt-1">X</label>
+                        </span>
+                        <span class="ml-1 flex items-center justify-between">
+                            <input type="radio" name="player2-choice" value="O" id="o2"
+                                class="player2-choice accent-[#06171F] w-4 h-4 mr-2"
+                                onchange="toggleMpPlayerChooser('player2-choice')" />
+                            <label for="o2" class="mt-1">O</label>
+                        </span>
+                    </div>
+
+                    <p id="error-msg-2" class="hidden text-base text-white tracking-widest mt-5 opacity-0 h-0 overflow-hidden transition-all">*Please Choose One</p>
+                </div>
+
+            </div>
+
+            <button id="start-multiplayer-game"
+                class="py-[15px] px-[30px] tracking-wide font-semibold text-2xl text-white bg-[#06171F] border-none rounded-2xl text-center active:bg-white active:text-[#06171F] transition-colors m-1">Start</button>
+
+        </div> <!--mp-game-setting ends here -->
+
+    </div> <!-- selector ends here -->
+
+    <!-- Game's HTML starts here -->
+    <div id="game-container" class="place-items-center hidden">
+        <!-- grid class to be added and hidden class to be removeed from JS-->
+        <main id="game" class="text-center w-screen h-[50vh] flex justify-center items-center flex-col">
+            <!-- main tag is a semantic markup -->
+            <table
+                class="h-full w-3/4 min-[500px]:w-2/3 sm:w-3/5 md:w-1/2 lg:w-2/5 xl:w-1/3 2xl:w-1/4 m-3 font-black text-5xl text-center">
+                <!-- 75% 66.66% 60% 50% 40% 33.33% 25% -->
+                <tr class="w-full h-1/3">
+                    <td id="box-0" class="box w-1/3 border-r-8 border-white cursor-pointer"></td>
+                    <td id="box-1" class="box w-1/3 border-r-8 border-white cursor-pointer"></td>
+                    <td id="box-2" class="box w-1/3 border-b-8 border-white cursor-pointer"></td>
+                </tr>
+                <tr class="w-full h-1/3">
+                    <td id="box-3" class="box w-1/3 border-t-8 border-r-8 border-white cursor-pointer"></td>
+                    <td id="box-4" class="box w-1/3 border-t-8 border-white cursor-pointer"></td>
+                    <td id="box-5" class="box w-1/3 border-l-8 border-white cursor-pointer"></td>
+                </tr>
+                <tr class="w-full h-1/3">
+                    <td id="box-6" class="box w-1/3 border-t-8 border-r-8 border-white cursor-pointer"></td>
+                    <td id="box-7" class="box w-1/3 border-t-8 border-r-8 border-white cursor-pointer"></td>
+                    <td id="box-8" class="box w-1/3 border-t-8 border-white cursor-pointer"></td>
+                </tr>
+            </table>
+        </main>
+
+        <h2 id="status" class="text-white text-3xl text-center font-extrabold tracking-wide"></h2>
+
+        <div class="mt-2 flex justify-center items-center">
+            <button
+                class="py-[15px] px-[30px] tracking-wide font-semibold text-2xl text-white bg-[#06171F] border-none rounded-2xl text-center active:bg-white active:text-[#06171F] transition-colors mr-1 max-[380px]:text-lg"
+                id="reset-game-btn">Reset</button>
+            <button
+                class="py-[15px] px-[30px] tracking-wide font-semibold text-2xl text-white bg-[#06171F] border-none rounded-2xl text-center active:bg-white active:text-[#06171F] transition-colors ml-1 max-[380px]:text-lg"
+                id="new-game-btn">New Game</button>
+        </div>
+
+    </div>
+    <!-- Game's HTML end's here -->
+
+    <script src="./app.js"></script>
+</body>
+
+</html>
