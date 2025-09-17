@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="../../resources/images/icon-16x16.svg" type="image/svg+xml" sizes="16x16" />
+    <link rel="icon" href="../../resources/images/icon-32x32.svg" type="image/svg+xml" sizes="32x32" />
+    <link rel="stylesheet" href="../../style.css" /> <!-- for some styling (shared among all the pages) -->
+    <link rel="stylesheet" href="./game.css" />
+    <title>Tic Tac Toe</title>
+</head>
+
+<body>
+    <div id="main-container">
+        <h1><a href="../../index.html">Tic Tac Toe</a></h1>
+
+        <div id="player-container"> <!-- current-player class will be applied to the player with the turn -->
+            <div class="player" id="player-x">
+                <p>X</p>
+                <p id="x-win-count" class="win-count">-</p>
+            </div>
+            <div class="player" id="player-o">
+                <p>O</p>
+                <p id="o-win-count" class="win-count">-</p>
+            </div>
+        </div>
+
+        <table>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+
+        <p id="game-status">Choose a player or start the game</p>
+
+        <div id="btn-container">
+            <a id="reset-btn" onclick="resetGame()">Reset</a>
+            <a id="new-game-btn" onclick="newGame()">New Game</a>
+        </div>
+    </div>
+
+    <div id="overlay">
+        <svg id="win-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <line id="win-line" x1="0" y1="0" x2="0" y2="0" />
+        </svg>
+    </div>
+
+    <script src="./game.js"></script>
+</body>
+
+</html>

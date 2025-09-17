@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="../../resources/images/icon-16x16.svg" type="image/svg+xml" sizes="16x16" />
+    <link rel="icon" href="../../resources/images/icon-32x32.svg" type="image/svg+xml" sizes="32x32" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="../../style.css" /> <!-- for some styling (shared among all the pages) -->
+    <link rel="stylesheet" href="./playerSelection.css" />
+    <title>Tic Tac Toe</title>
+</head>
+
+<body>
+    <div id="main-container">
+        <h1><a href="../../index.html">Tic Tac Toe</a></h1>
+
+        <div id="player-selection-container">
+            <div id="player-1-selection-container">
+                <p>Player I</p>
+
+                <div id="player-1-radio-input-container">
+                    <span>
+                        <input type="radio" name="player-1" id="player-1-x" value="x" onchange="chooseThisPlayerAndToggleOtherPlayer(this)" />
+                        <label for="player-1-x">X</label>
+                    </span>
+
+                    <span>
+                        <input type="radio" name="player-1" id="player-1-o" value="o" onchange="chooseThisPlayerAndToggleOtherPlayer(this)" />
+                        <label for="player-1-o">O</label>
+                    </span>
+                </div>
+            </div>
+
+            <div id="player-2-selection-container">
+                <p>Player II</p>
+
+                <div id="player-2-radio-input-container">
+                    <span>
+                        <input type="radio" name="player-2" id="player-2-x" value="x" 
+                        onchange="chooseThisPlayerAndToggleOtherPlayer(this)" />
+                        <label for="player-2-x">X</label>
+                    </span>
+
+                    <span>
+                        <input type="radio" name="player-2" id="player-2-o" value="o" onchange="chooseThisPlayerAndToggleOtherPlayer(this)" />
+                        <label for="player-2-o">O</label>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div id="btn-container">
+            <a href="../../index.html" id="go-back-btn">
+                <i class="bi bi-arrow-left-circle"></i>
+                <p>Go Back</p>
+            </a>
+            <a onclick="startTheGame()">Start</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="./playerSelection.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+#player-selection-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0px 15px;
+}
+
+#player-selection-container>div {
+    border: 5px solid #fff;
+    padding: 25px 35px;
+    border-radius: 1rem;
+}
+
+#player-1-selection-container>p,
+#player-2-selection-container>p {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    color: #ffff;
+    font-weight: 700;
+}
+
+#player-1-radio-input-container,
+#player-2-radio-input-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#player-1-radio-input-container>span,
+#player-2-radio-input-container>span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    outline: none;
+    position: relative;
+    cursor: url("../../resources/images/pointer_cursor.svg") 16 16, pointer;
+}
+
+input[type="radio"]:checked::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ffffff;
+}
+
+label {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+    color: #ffffff;
+    cursor: url("../../resources/images/pointer_cursor.svg") 16 16, pointer;
+}
+
+#go-back-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+}
+
+#go-back-btn>i {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bolder;
+    line-height: 1;
+}
+
+#swal2-title,
+#swal2-html-container,
+.swal2-confirm {
+    font-family: "Comic Sans MS", sans-serif;
+}
