@@ -1,7 +1,7 @@
 let player1 = '', player2 = '', currentPlayer = '';
 
 // fetching them for border manipulation
-const players = document.querySelectorAll(".player") // for single player purpose
+const players = document.querySelectorAll(".player"); // for single player purpose
 const playerXContainer = document.getElementById("player-x");
 const playerOContainer = document.getElementById("player-o");
 
@@ -21,6 +21,8 @@ const gameStatusTxt = document.getElementById("game-status");
 let gameStatus = 0; // wiil be 0 or 1, if draw or won by any player then this will be marked 1, else gameStatus will remain 0 (means continue the game)
 let lastMoveCellIndex = -1;
 
+let playerContainerClickStatus = false;
+
 const WIN_COMBOS = [ // there are total 8 winning conditions, 3 row-wise, 3 column-wise, and 2 diagonal-wise
   [0, 1, 2],
   [3, 4, 5],
@@ -31,6 +33,9 @@ const WIN_COMBOS = [ // there are total 8 winning conditions, 3 row-wise, 3 colu
   [0, 4, 8],
   [2, 4, 6]
 ];
+
+const params = new URLSearchParams(window.location.search);
+const isMultiplayerBool = params.get("isMultiplayer") === "true"; //  converting into bool
 
 // ================== helper functions ==================
 function setCurrentPlayerUI() {
@@ -242,6 +247,51 @@ function drawWinLineForCombo(combo) {
   showSingleLine(fallbackStart, fallbackEnd, lineColor);
 }
 
+function checkGameResult() {
+  const result = getGameResult();
+
+  if (result.type === "continue")
+    changeTurn();
+  else if (result.type === "draw") {
+    gameStatusTxt.innerText = "It's a draw";
+    gameStatus = 1;
+  } else if (result.type === "win") {
+    gameStatusTxt.innerText = `${currentPlayer.toUpperCase()} WON!`;
+    gameStatus = 1;
+
+    const winner = currentPlayer.toLowerCase();
+    if (winner === 'x') {
+      const n = (xWinCount.innerText === '-') ? 0 : Number(xWinCount.innerText || 0);
+      xWinCount.innerText = n + 1;
+      xWinCount.style.fontFamily = "Comic Sans MS, sans-serif";
+    } else {
+      const n = (oWinCount.innerText === '-') ? 0 : Number(oWinCount.innerText || 0);
+      oWinCount.innerText = n + 1;
+      oWinCount.style.fontFamily = "Comic Sans MS, sans-serif";
+    }
+
+    drawWinLineForCombo(result.combo);
+  }
+}
+
+function handlePlayerChoice(playerContainer) {
+  if (!playerContainerClickStatus) {
+    if (playerContainer.id.toLowerCase() === "player-x")
+      player2 = 'x';
+    else
+      player2 = 'o';
+
+    playerContainer.classList.remove("single-player");
+    currentPlayer = player2; // now player-1 is the CPU player, here player-2 only because we've to set player selection (x or o -> border-bottom) on the UI
+    setCurrentPlayerUI();
+
+    playerContainerClickStatus = true;
+    players.forEach(playerContainer => playerContainer.classList.remove("single-player"));
+
+    computerTurn();
+  }
+}
+
 function clearPageData() {
   cells.forEach(cell => {
     cell.innerText = '';
@@ -266,15 +316,68 @@ function handleResize() {
 }
 // ================== helper functions ==================
 
+function computerTurn() {
+  if (gameStatus) return;
+
+  // prevent user from clicking while computer is thinking
+  cells.forEach(cell => cell.style.pointerEvents = "none");
+
+  setTimeout(() => {
+    const values = Array.from(cells, c => c.innerText.trim());
+    let moveIndex = -1;
+
+    // checking if computer can win
+    for (const combo of WIN_COMBOS) {
+      const [a, b, c] = combo;
+      const line = [values[a], values[b], values[c]];
+      if (line.filter(v => v === player2).length === 2 && line.includes("")) {
+        moveIndex = combo[line.indexOf("")];
+        break;
+      }
+    }
+
+    // blocking the player if the player is about to win
+    if (moveIndex === -1) {
+      for (const combo of WIN_COMBOS) {
+        const [a, b, c] = combo;
+        const line = [values[a], values[b], values[c]];
+        if (line.filter(v => v === player1).length === 2 && line.includes("")) {
+          moveIndex = combo[line.indexOf("")];
+          break;
+        }
+      }
+    }
+
+    // otherwise picking center > corners > edges
+    if (moveIndex === -1) {
+      const preferredMoves = [4, 0, 2, 6, 8, 1, 3, 5, 7];
+      moveIndex = preferredMoves.find(i => values[i] === "");
+    }
+
+    // making the move
+    if (moveIndex !== undefined && moveIndex >= 0) {
+      const cell = cells[moveIndex];
+      cell.className = "pop-in";
+      cell.innerText = currentPlayer;
+      cell.style.color = (currentPlayer === 'x') ? "#32D1FF" : "#8E44FF";
+      lastMoveCellIndex = moveIndex;
+    }
+
+    checkGameResult(); // checking game result after computer's move
+
+    if (!gameStatus)
+      cells.forEach(cell => cell.style.pointerEvents = "auto");
+  }, 500); // bit delay for human-like feeling
+}
+
 cells.forEach((cell, i) => {
   cell.addEventListener("click", () => {
     if (gameStatus) return; // game finished
-    if (cell.innerText.trim()) // if the cell already has content, then do not do anything
-      return;
+    if (cell.innerText.trim()) return; // if the cell already has content, then do not do anything
 
     // else
     if (!currentPlayer) {
-      currentPlayer = player1 || 'x';
+      currentPlayer = player1;
       setCurrentPlayerUI();
     }
 
@@ -283,35 +386,15 @@ cells.forEach((cell, i) => {
     cell.style.color = (currentPlayer.toLowerCase() === 'x') ? "#32D1FF" : "#8E44FF";
     lastMoveCellIndex = i; // for drawing the win line
 
-    const result = getGameResult();
-    if (result.type === "continue") {
-      changeTurn();
-      return;
-    }
+    checkGameResult(); // checking game results after the move's been made
 
-    if (result.type === "draw") {
-      gameStatusTxt.innerText = "It's a draw";
-      gameStatus = 1;
-      return;
-    }
-
-    if (result.type === "win") {
-      gameStatusTxt.innerText = `${currentPlayer} WON!`;
-      gameStatus = 1;
-
-      const winner = currentPlayer.toLowerCase();
-      if (winner === 'x') {
-        const n = (xWinCount.innerText === '-') ? 0 : Number(xWinCount.innerText || 0);
-        xWinCount.innerText = n + 1;
-        xWinCount.style.fontFamily = "Comic Sans MS, sans-serif";
-      } else {
-        const n = (oWinCount.innerText === '-') ? 0 : Number(oWinCount.innerText || 0);
-        oWinCount.innerText = n + 1;
-        oWinCount.style.fontFamily = "Comic Sans MS, sans-serif";
+    if (!isMultiplayerBool && !gameStatus) {
+      if (!playerContainerClickStatus) {
+        playerContainerClickStatus = true;
+        players.forEach(playerContainer => playerContainer.classList.remove("single-player"));
       }
 
-      // drawing an animated line
-      drawWinLineForCombo(result.combo);
+      computerTurn();
     }
   });
 });
@@ -319,6 +402,18 @@ cells.forEach((cell, i) => {
 function resetGame() {
   changeTurn(); // re-initalizing the current player, to the player opposite to the one who actually had the 1st turn in the prev. game
   clearPageData();
+
+  if (!isMultiplayerBool) {
+    cells.forEach(cell => cell.style.pointerEvents = "auto");
+
+    playerContainerClickStatus = false;
+    players.forEach(playerContainer => {
+      playerContainer.classList.add("single-player");
+      playerContainer.addEventListener("click", () => handlePlayerChoice(playerContainer), { once: true })
+    });
+
+    gameStatusTxt.innerText = "Choose a player or start the game";
+  }
 }
 
 function newGame() {
@@ -338,9 +433,6 @@ observer.observe(table);
 
 window.addEventListener("load", () => {
   handleResize(); // initial check
-
-  const params = new URLSearchParams(window.location.search);
-  const isMultiplayerBool = params.get("isMultiplayer") === "true"; //  converting into bool
 
   winCounts.forEach(winCount => {
     if (winCount.innerText === '-')
@@ -366,11 +458,15 @@ window.addEventListener("load", () => {
     player1 = 'x';
     player2 = 'o';
 
-    currentPlayer = '';
+    currentPlayer = player1;
 
-    setCurrentPlayerUI();
     playerXContainer.classList.add("current-player");
-    players.forEach(playerContainer => {})
+
+    players.forEach(playerContainer => {
+      playerContainer.classList.add("single-player");
+      playerContainer.addEventListener("click", () => handlePlayerChoice(playerContainer), { once: true })
+    });
+    gameStatusTxt.innerText = "Choose a player or start the game";
   }
 
   hideWinLine(); // hidding any win line initially
